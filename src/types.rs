@@ -3,6 +3,8 @@ use serde_json::Value;
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
 
+type MultivaluedHashMap = HashMap<String, Vec<serde_json::Value>>;
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub enum AccessTokenCategory {
     Internal,
@@ -656,15 +658,6 @@ pub struct MemoryInfoRepresentation {
     pub total_formated: Option<String>,
     pub used: Option<i64>,
     pub used_formated: Option<String>,
-}
-
-#[skip_serializing_none]
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MultivaluedHashMap {
-    pub empty: Option<bool>,
-    pub load_factor: Option<f32>,
-    pub threshold: Option<i32>,
 }
 
 #[skip_serializing_none]

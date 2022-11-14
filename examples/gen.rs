@@ -58,6 +58,9 @@ fn check_optional(value: &str) -> bool {
     "optional" == value
 }
 
+/// Structures that need special handling
+const STRUCTS_TO_IGNORE: &[&str] = &["MultivaluedHashMap"];
+
 type TypeDuo = (Vec<EnumType>, Vec<Rc<StructType>>);
 fn read_types_info(document: &scraper::Html) -> Result<TypeDuo, std::io::Error> {
     let definitions_selector =
@@ -72,6 +75,9 @@ fn read_types_info(document: &scraper::Html) -> Result<TypeDuo, std::io::Error> 
     let mut enums = vec![];
     for definition in definitions {
         let struct_name = text(&definition, "h3").replace('-', "");
+        if STRUCTS_TO_IGNORE.contains(&struct_name.as_str()) {
+            continue;
+        }
 
         let fields_selector = Selector::parse("tbody tr").unwrap();
 
@@ -281,6 +287,8 @@ fn write_types(enums: &[EnumType], structs: &[Rc<StructType>]) {
     println!("use serde_json::Value;");
     println!("use serde_with::skip_serializing_none;");
     println!("use std::collections::HashMap;\n");
+
+    println!("type MultivaluedHashMap = HashMap<String, Vec<serde_json::Value>>;\n");
 
     for e in enums {
         println!("#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]");
